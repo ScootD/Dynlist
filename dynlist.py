@@ -213,13 +213,25 @@ cyclelistint = [None]
 cycleint = [None]
 currentcycle = [None]
 workinglist = [None]
+editfile = None
+templist = [None] * 10000
+tempint = 0
+filepath = None
 
 
-def cycle(tocycle, l):
+def cycle(tocycle, l, f):
     if l == 1:
         letterlist = letterVar
     elif l == 0:
         letterlist = simplettervar
+    global curkey
+    global cyclelist
+    global cyclelistint
+    global cycleint
+    global currentcycle
+    global workinglist
+    global filepath
+    filepath = f
     curkey = tocycle
     cyclelist = list(tocycle)  # list of original chars
     cyclelistint = [None] * len(tocycle)  # list of original char integer values
@@ -232,23 +244,32 @@ def cycle(tocycle, l):
     for index in range(0, cycleint[0]):
         workinglist[0] = letterlist[ord(cyclelist[0])-33][index]
         if len(tocycle) > 0:
-            nextletter(1, cycleint, curkey, workinglist, cyclelist, letterlist)
+            nextletter(1, letterlist)
         else:
             tolist(''.join(workinglist))
 
 
-def nextletter(i, c, k, w, l, ls):
+def nextletter(i, ls):
     ni = i + 1
-    for index in range(0, c[i]):
-        w[i] = ls[ord(l[i])-33][index]
-        if len(k) > i+1:
-            nextletter(ni, c, k, w, l, ls)
+    for index in range(0, cycleint[i]):
+        workinglist[i] = ls[ord(cyclelist[i])-33][index]
+        if len(curkey) > i+1:
+            nextletter(ni, ls)
         else:
-            tolist(''.join(w))
+            tolist(''.join(workinglist))
 
 
 def tolist(p):
-    passwordList.append(p)
+    # passwordList.append(p)
+    global templist
+    global tempint
+    templist[tempint] = p
+    if tempint == 99999:
+        tempint = 0;
+        appendfile(templist, filepath)
+        templist = [None] * 10000
+    else:
+        tempint += 1
 
 
 def writefile(p, f):
@@ -258,7 +279,20 @@ def writefile(p, f):
     out.close()
 
 
-cycle('password', 0)
-print(passwordList)
-writefile(passwordList, 'foo.txt')
+def createfile(f):
+    global editfile
+    editfile = open(f, 'w')
+    editfile.close()
+
+
+def appendfile(p, f):
+    editfile = open(f, 'a')
+    for index in range(0, len(p)):
+        editfile.write(p[index] + '\n')
+    editfile.close()
+
+
+cycle('pass', 1, 'foo.txt')
+# print(passwordList)
+# writefile(passwordList, 'foo.txt')
 print('list is ' + str(len(passwordList)) + ' passwords long')
