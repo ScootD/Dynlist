@@ -214,7 +214,7 @@ cycleint = [None]
 currentcycle = [None]
 workinglist = [None]
 editfile = None
-templist = [None] * 10000
+templist = [None] * 1000000
 tempint = 0
 filepath = None
 
@@ -264,10 +264,10 @@ def tolist(p):
     global templist
     global tempint
     templist[tempint] = p
-    if tempint == 99999:
+    if tempint == len(templist)-1:
         tempint = 0;
         appendfile(templist, filepath)
-        templist = [None] * 10000
+        templist = [None] * 1000000
     else:
         tempint += 1
 
@@ -280,19 +280,18 @@ def writefile(p, f):
 
 
 def createfile(f):
-    global editfile
-    editfile = open(f, 'w')
-    editfile.close()
+    out = open(f, 'w')
+    out.close()
 
 
 def appendfile(p, f):
-    editfile = open(f, 'a')
+    out = open(f, 'a')
     for index in range(0, len(p)):
-        editfile.write(p[index] + '\n')
-    editfile.close()
+        out.write(p[index] + '\n')
+    out.close()
 
 
-cycle('pass', 1, 'foo.txt')
+cycle('password', 0, 'foo.txt')
 # print(passwordList)
 # writefile(passwordList, 'foo.txt')
 print('list is ' + str(len(passwordList)) + ' passwords long')
