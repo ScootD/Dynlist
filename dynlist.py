@@ -207,7 +207,7 @@ parser.add_argument('-lt', metavar='Lead Type', type=int, help='0 for numeric, 1
 parser.add_argument('-tt', metavar='Tail Type', type=int, help='0 for numeric, 1 for alpha, 2 for full. 2 by default')
 
 results = parser.parse_args()
-memelements = 1000000
+memelements = 10000000
 curkey = None
 cyclelist = [None]
 cyclelistint = [None]
@@ -218,9 +218,14 @@ editfile = None
 templist = [None] * memelements
 tempint = 0
 filepath = None
+run = True;
 
 
 def cycle(tocycle, l, f):
+    global run
+    if run:
+        rewrite(f)
+        run = False
     if l == 1:
         letterlist = letterVar
     elif l == 0:
@@ -275,7 +280,7 @@ def tolist(p, l=0):
 
 
 def writefile(p, l):
-    out = open(filepath, 'a')
+    out = open(filepath, 'a', encoding='utf-8')
     if l == 0:
         for index in range(0, len(p)):
             out.write(p[index] + '\n')
@@ -287,6 +292,10 @@ def writefile(p, l):
                 break
     out.close()
 
+
+def rewrite(f):
+    out = open(f, 'w', encoding='utf-8')
+    out.close()
 
 # def createfile(f):
 #    out = open(f, 'w')
