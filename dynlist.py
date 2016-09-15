@@ -207,6 +207,7 @@ parser.add_argument('-lt', metavar='Lead Type', type=int, help='0 for numeric, 1
 parser.add_argument('-tt', metavar='Tail Type', type=int, help='0 for numeric, 1 for alpha, 2 for full. 2 by default')
 
 results = parser.parse_args()
+memelements = 1000000
 curkey = None
 cyclelist = [None]
 cyclelistint = [None]
@@ -214,7 +215,7 @@ cycleint = [None]
 currentcycle = [None]
 workinglist = [None]
 editfile = None
-templist = [None] * 1000000
+templist = [None] * memelements
 tempint = 0
 filepath = None
 
@@ -266,14 +267,14 @@ def tolist(p):
     templist[tempint] = p
     if tempint == len(templist)-1:
         tempint = 0;
-        appendfile(templist, filepath)
-        templist = [None] * 1000000
+        writefile(templist)
+        templist = [None] * memelements
     else:
         tempint += 1
 
 
-def writefile(p, f):
-    out = open(f, 'w')
+def writefile(p):
+    out = open(filepath, 'a')
     for index in range(0, len(p)):
         out.write(p[index] + '\n')
     out.close()
