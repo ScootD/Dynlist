@@ -248,6 +248,7 @@ def cycle(tocycle, l, f):
             nextletter(1, letterlist)
         else:
             tolist(''.join(workinglist))
+    tolist(''.join(workinglist), 1)
 
 
 def nextletter(i, ls):
@@ -260,36 +261,43 @@ def nextletter(i, ls):
             tolist(''.join(workinglist))
 
 
-def tolist(p):
+def tolist(p, l=0):
     # passwordList.append(p)
     global templist
     global tempint
     templist[tempint] = p
-    if tempint == len(templist)-1:
-        tempint = 0;
-        writefile(templist)
+    if tempint == len(templist)-1 or l == 1:
+        tempint = 0
+        writefile(templist, l)
         templist = [None] * memelements
     else:
         tempint += 1
 
 
-def writefile(p):
+def writefile(p, l):
     out = open(filepath, 'a')
-    for index in range(0, len(p)):
-        out.write(p[index] + '\n')
+    if l == 0:
+        for index in range(0, len(p)):
+            out.write(p[index] + '\n')
+    else:
+        for index in range(0, len(p)):
+            if p[index] is not None:
+                out.write(p[index] + '\n')
+            else:
+                break
     out.close()
 
 
-def createfile(f):
-    out = open(f, 'w')
-    out.close()
+# def createfile(f):
+#    out = open(f, 'w')
+#    out.close()
 
 
-def appendfile(p, f):
-    out = open(f, 'a')
-    for index in range(0, len(p)):
-        out.write(p[index] + '\n')
-    out.close()
+# def appendfile(p, f):
+#    out = open(f, 'a')
+#    for index in range(0, len(p)):
+#        out.write(p[index] + '\n')
+#    out.close()
 
 
 cycle('password', 0, 'foo.txt')
