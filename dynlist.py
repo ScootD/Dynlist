@@ -218,7 +218,12 @@ editfile = None
 templist = [None] * memelements
 tempint = 0
 filepath = None
-run = True;
+run = True
+processcount = 8
+processlist = []
+workinglist = []
+memelement = []
+startpoint = []
 
 
 def cycle(tocycle, l, f):
@@ -308,8 +313,10 @@ def rewrite(f):
 #        out.write(p[index] + '\n')
 #    out.close()
 
+if __name__ == "__main__":
+    cycle('password', 0, 'foo.txt')
+    # print(passwordList)
+    # writefile(passwordList, 'foo.txt')
+    print('list is ' + str(len(passwordList)) + ' passwords long')
 
-cycle('password', 0, 'foo.txt')
-# print(passwordList)
-# writefile(passwordList, 'foo.txt')
-print('list is ' + str(len(passwordList)) + ' passwords long')
+
