@@ -226,65 +226,81 @@ endlist = []
 startlist = []
 
 
-def workdist(l, pswd):
-    global endlist
-    global startlist
-    endlist = [None] * processcount
-    startlist = [None] * processcount
-    for index in range(processcount):
-        endlist[index] = (l//processcount)
-        startlist[index] = (l//processcount)*index
-        if index == processcount-1:
-            endlist[index] += (l % processcount)
+def getindex(i, b):
+    output = []
+    for base in reversed(b):
+        output.insert(0, i % base)
+        i = i // base
+    return output
 
 
-def run(start, end, mem):
-    # do stuff
-
-
-def processinit(ls, ps):
-    workdist(ls, ps)
-    for p in range(processcount):
-        process = Process(target=run, args=(startlist[p], endlist[p],))
-        process.start()
-        processlist.append(process)
-    for p in range(processcount):
-        processlist[p].join()
-
-
-def cycle(tocycle, l, f):
-    global run
-    if run:
-        rewrite(f)
-        run = False
+def getpos(k, l, c):
+    letlist = list(k)
+    numlist = [] * len(letlist)
+    if l == 0:
+        letterlist = simplettervar
     if l == 1:
         letterlist = letterVar
-    elif l == 0:
+    for index in range(len(letlist)):
+        numlist[index] = len(letterlist[ord(letlist[index]) - 33])
+    temp = 1
+    for index in range(len(letlist)):
+        temp *= numlist[index]
+    global startlist
+    global endlist
+    startlist = [] * c
+    for i in range(len(startlist)):
+        startlist[i] = 0
+    for index in range(c):
+        if index == 0:
+            startlist[index].append(list[0] * len(letlist))
+            endlist[index].append(getindex(temp//index, numlist))
+        else:
+            startlist[index].append(getindex((((temp//c) * (index - 1)) + 1, numlist)))
+            if index < c - 1:
+                endlist[index].append(getindex((temp//c) * index, numlist))
+            else:
+                endlist[index].append(temp - 1, numlist)
+
+
+def startwork(ps, c, l, m):
+    getpos(ps, l, c)
+    processinit(ps, l, m)
+
+
+def cycle(pwd, start, end, ltype, mem, f):
+    fname = 'temp' + str(f) + '.txt'
+    rewrite(fname)
+    if ltype == 1:
+        letterlist = letterVar
+    elif ltype == 0:
         letterlist = simplettervar
-    global curkey
-    global cyclelist
-    global cyclelistint
     global cycleint
-    global currentcycle
     global workinglist
-    global filepath
-    filepath = f
-    curkey = tocycle
-    cyclelist = list(tocycle)  # list of original chars
-    cyclelistint = [None] * len(tocycle)  # list of original char integer values
-    cycleint = [None] * len(tocycle)  # list of char transformations
-    currentcycle = [0] * len(tocycle)  # list of current char transformation
-    workinglist = [None] * len(tocycle)  # list of working chars
-    for index in range(0, len(tocycle)):
-        cycleint[index] = len(letterlist[ord(cyclelist[index])-33])
-        cyclelistint[index] = ord(cyclelist[index])-33
+    cycleint = [None] * len(pwd)  # list of char transformations
+    workinglist = [None] * len(pwd)  # list of working chars
+    for index in range(0, len(pwd)):
+        cycleint[index] = len(letterlist[ord(cyclelist[index]) - 33])
     for index in range(0, cycleint[0]):
-        workinglist[0] = letterlist[ord(cyclelist[0])-33][index]
-        if len(tocycle) > 0:
+        workinglist[0] = letterlist[ord(cyclelist[0]) - 33][index]
+        if len(pwd) > 0:
             nextletter(1, letterlist)
         else:
             tolist(''.join(workinglist))
     tolist(''.join(workinglist), 1)
+
+
+def run(start, end, ltype, mem, file):
+    cycle(start, end, ltype, mem, file)
+
+
+def processinit(pwd, l, m):
+    for p in range(processcount):
+        process = Process(target=run, args=(pwd, startlist[p], endlist[p], l, m, p,))
+        process.start()
+        processlist.append(process)
+    for p in range(processcount):
+        processlist[p].join()
 
 
 def nextletter(i, ls):
@@ -340,9 +356,10 @@ def rewrite(f):
 #    out.close()
 
 if __name__ == "__main__":
-    cycle('password', 0, 'foo.txt')
+    startwork('pass', 4, 0, 1000000)
+    # cycle('password', 0, 'foo.txt')
     # print(passwordList)
     # writefile(passwordList, 'foo.txt')
-    print('list is ' + str(len(passwordList)) + ' passwords long')
+
 
 
