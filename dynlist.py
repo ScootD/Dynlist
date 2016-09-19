@@ -1,4 +1,5 @@
 import argparse
+from multiprocessing import Process
 
 letterVar = [
     ['!', '1', '?'],  # ! at index 33
@@ -213,7 +214,6 @@ cyclelist = [None]
 cyclelistint = [None]
 cycleint = [None]
 currentcycle = [None]
-workinglist = [None]
 editfile = None
 templist = [None] * memelements
 tempint = 0
@@ -222,8 +222,34 @@ run = True
 processcount = 8
 processlist = []
 workinglist = []
-memelement = []
-startpoint = []
+endlist = []
+startlist = []
+
+
+def workdist(l, pswd):
+    global endlist
+    global startlist
+    endlist = [None] * processcount
+    startlist = [None] * processcount
+    for index in range(processcount):
+        endlist[index] = (l//processcount)
+        startlist[index] = (l//processcount)*index
+        if index == processcount-1:
+            endlist[index] += (l % processcount)
+
+
+def run(start, end, mem):
+    # do stuff
+
+
+def processinit(ls, ps):
+    workdist(ls, ps)
+    for p in range(processcount):
+        process = Process(target=run, args=(startlist[p], endlist[p],))
+        process.start()
+        processlist.append(process)
+    for p in range(processcount):
+        processlist[p].join()
 
 
 def cycle(tocycle, l, f):
