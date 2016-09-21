@@ -227,19 +227,21 @@ startlist = []
 
 
 def getindex(i, b):
+    inp = i
+    bases = b
     output = []
-    for base in reversed(b):
-        output.insert(0, i % base)
-        i = i // base
+    for base in reversed(bases):
+        output.insert(0, inp % base)
+        inp = inp // base
     return output
 
 
 def getpos(k, l, c):
     letlist = list(k)
-    numlist = [] * len(letlist)
+    numlist = [0] * len(letlist)
     if l == 0:
         letterlist = simplettervar
-    if l == 1:
+    else:
         letterlist = letterVar
     for index in range(len(letlist)):
         numlist[index] = len(letterlist[ord(letlist[index]) - 33])
@@ -248,19 +250,18 @@ def getpos(k, l, c):
         temp *= numlist[index]
     global startlist
     global endlist
-    startlist = [] * c
-    for i in range(len(startlist)):
-        startlist[i] = 0
+    startlist = []
     for index in range(c):
         if index == 0:
-            startlist[index].append(list[0] * len(letlist))
-            endlist[index].append(getindex(temp//index, numlist))
+            emptylist = [0] * len(letlist)
+            startlist.append(emptylist)
+            endlist.append(getindex(temp//c, numlist))
         else:
-            startlist[index].append(getindex((((temp//c) * (index - 1)) + 1, numlist)))
+            startlist.append(getindex(((temp//c) * index) + 1, numlist))
             if index < c - 1:
-                endlist[index].append(getindex((temp//c) * index, numlist))
+                endlist.append(getindex((temp//c) * index, numlist))
             else:
-                endlist[index].append(temp - 1, numlist)
+                endlist.append(getindex(temp - 1, numlist))
 
 
 def startwork(ps, c, l, m):
@@ -269,29 +270,34 @@ def startwork(ps, c, l, m):
 
 
 def cycle(pwd, start, end, ltype, mem, f):
-    fname = 'temp' + str(f) + '.txt'
-    rewrite(fname)
+    global filepath
+    filepath = 'temp' + str(f) + '.txt'
+    rewrite(filepath)
     if ltype == 1:
         letterlist = letterVar
-    elif ltype == 0:
+    else:
         letterlist = simplettervar
     global cycleint
     global workinglist
-    cycleint = [None] * len(pwd)  # list of char transformations
-    workinglist = [None] * len(pwd)  # list of working chars
-    for index in range(0, len(pwd)):
+    global cyclelist
+    cycleint = [0] * len(pwd)  # list of char transformations
+    workinglist = [0] * len(pwd)  # list of working chars
+    cyclelist = list(pwd)
+    for index in range(len(pwd)):
         cycleint[index] = len(letterlist[ord(cyclelist[index]) - 33])
-    for index in range(0, cycleint[0]):
-        workinglist[0] = letterlist[ord(cyclelist[0]) - 33][index]
+    workinglist = start
+    for index in range(start[0], end[0]):
+        workinglist[0] = letterlist[ord(cyclelist[0]) - 33[index]]
         if len(pwd) > 0:
-            nextletter(1, letterlist)
+            nextletter(1, letterlist, start, end, mem)
         else:
-            tolist(''.join(workinglist))
-    tolist(''.join(workinglist), 1)
+            tolist(''.join(workinglist), mem)
+            tolist(''.join(workinglist), mem, 1)
+    tolist(''.join(workinglist), mem, 1)
 
 
-def run(start, end, ltype, mem, file):
-    cycle(start, end, ltype, mem, file)
+def run(pwd, start, end, ltype, mem, file):
+    cycle(pwd, start, end, ltype, mem, file)
 
 
 def processinit(pwd, l, m):
@@ -303,17 +309,17 @@ def processinit(pwd, l, m):
         processlist[p].join()
 
 
-def nextletter(i, ls):
+def nextletter(i, ls, s, e, m):
     ni = i + 1
-    for index in range(0, cycleint[i]):
+    for index in range(s[i], e[i]):
         workinglist[i] = ls[ord(cyclelist[i])-33][index]
-        if len(curkey) > i+1:
-            nextletter(ni, ls)
+        if len(workinglist) > i+1:
+            nextletter(ni, ls, s, e, m)
         else:
-            tolist(''.join(workinglist))
+            tolist(''.join(workinglist), m)
 
 
-def tolist(p, l=0):
+def tolist(p, mem, l=0):
     # passwordList.append(p)
     global templist
     global tempint
@@ -321,7 +327,7 @@ def tolist(p, l=0):
     if tempint == len(templist)-1 or l == 1:
         tempint = 0
         writefile(templist, l)
-        templist = [None] * memelements
+        templist = [None] * mem
     else:
         tempint += 1
 
